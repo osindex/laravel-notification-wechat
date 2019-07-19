@@ -16,10 +16,10 @@ class WechatServiceProvider extends ServiceProvider
         $this->app->when(WechatChannel::class)
             ->needs(Wechat::class)
             ->give(function () {
-                $credential = new DefaultCredential(config('services.wechat.appid'), config('services.wechat.appsecret'));
-
                 if (class_exists('EasyWeChat\Factory')) {
                     $credential = new EasyWechatCredential();
+                } else {
+                    $credential = new DefaultCredential(config('services.wechat.appid'), config('services.wechat.appsecret'));
                 }
 
                 return new Wechat($credential);
