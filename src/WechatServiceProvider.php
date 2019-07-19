@@ -3,6 +3,8 @@
 namespace Yansongda\LaravelNotificationWechat;
 
 use Illuminate\Support\ServiceProvider;
+use Yansongda\LaravelNotificationWechat\Credentials\DefaultCredential;
+use Yansongda\LaravelNotificationWechat\Credentials\EasyWechatCredential;
 
 class WechatServiceProvider extends ServiceProvider
 {
@@ -14,9 +16,13 @@ class WechatServiceProvider extends ServiceProvider
         $this->app->when(WechatChannel::class)
             ->needs(Wechat::class)
             ->give(function () {
-                return new Wechat(
-                    new Credential(config('services.wechat.appid'), config('services.wechat.appsecret'))
-                );
+                $credential = new DefaultCredential(config('services.wechat.appid'), config('services.wechat.appsecret'));
+
+                if (class_exists('EasyWeChat\Factory')) {
+                    $credential = new EasyWechatCredential();
+                }
+
+                return new Wechat($credential);
             });
     }
 
